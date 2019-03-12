@@ -56,14 +56,14 @@ void Hungarian::parse_file(std::ifstream &file)
             if(m_columns == -1)
                 m_columns = array->size();
             else if(m_columns != array->size()){
-                    delete[] array;
+                    delete array;
                     throw std::string("Неправельный формат входных данных\n");
             }
             m_matrix[i] = new int[m_columns];
 
             for(int j = 0; j < m_columns; ++j)
                 m_matrix[i][j] = (*array)[j];
-                
+
             delete array;
         }
         catch(std::string str)
@@ -89,7 +89,7 @@ std::vector<int> *Hungarian::parse_line(std::string &line)
         }
         catch(std::invalid_argument &e)
         {
-            throw std::string(e.what());
+            throw std::string("В файле присутсвуют не только лишь цифры\n");
         }
         
     }
