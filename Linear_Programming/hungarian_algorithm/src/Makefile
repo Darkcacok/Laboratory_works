@@ -1,7 +1,9 @@
-exe: hungarian
-	g++ -g main.cpp hungarian.o -o exe
+exe: matrix hungarian
+	g++ -g main.cpp hungarian.o matrix.o -o exe
 hungarian:
-	g++ -c -g hungarian.cpp
+	g++ -c -g hungarian.cpp matrix.o
+matrix:
+	g++ -c -g matrix.cpp
 
 
 

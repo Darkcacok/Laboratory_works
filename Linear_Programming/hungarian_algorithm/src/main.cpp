@@ -2,7 +2,7 @@
 
 
 #include "hungarian.h"
-
+#include "matrix.h"
 
 
 
@@ -16,9 +16,12 @@ int main(int argc, char **argv)
     }
     try{
         std::string f_path = std::string(argv[1]);
-        Hungarian *test = new Hungarian(f_path);
+        Matrix matrix(f_path);
+        Hungarian *test = new Hungarian(matrix);
 
-        test->print();
+        std::cout << matrix << std::endl;
+        test->solve();
+        test->get_solve();
     }
     catch(std::string str){
         std::cout << str;
