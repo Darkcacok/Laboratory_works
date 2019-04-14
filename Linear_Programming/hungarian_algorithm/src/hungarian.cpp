@@ -108,17 +108,6 @@ void Hungarian::solve()
     //Вычитаем минимальный элемнт
     preliminary_stage();
 
-    /*for (int i = 0; i < row - 1; ++i)
-    {
-        for (int j = 0; j < col - 1; ++j)
-        {
-            std::cout << C0[i][j] << "\t";
-        }
-
-        std::cout << std::endl;
-    }
-
-    std::cout << std::endl;*/
 
     //Строим начальную мартцу перевозок
     for (int j = 0; j < col - 1; ++j)
@@ -148,17 +137,6 @@ void Hungarian::solve()
             }
         }
 
-    /*for (int i = 0; i < row - 1; ++i)
-    {
-        for (int j = 0; j < col - 1; ++j)
-        {
-            std::cout << help_matrix[i][j] << "\t";
-        }
-
-        std::cout << std::endl;
-    }*/
-
-    //std::cout << std::endl << check_residuals() << std::endl;
 
 
 
@@ -172,10 +150,6 @@ void Hungarian::solve()
         std::cout << "Cуммарная невязка равна = " << check_residuals() << std::endl;
         std::cout << "|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|*|" << std::endl;
 
-        /*print_C();
-        std::cout << std::endl;
-        print_x();
-        std::cout << "--------------------------------------------\n";*/
         //5. Помечаем знаком + столбцы матрицы
         mark_column_matrix();
         std::cout << std::endl << "C = " << std::endl;
@@ -189,17 +163,6 @@ void Hungarian::solve()
             flag = find_not_busy_zero(&indx_i, &indx_j);
         }
 
-        /*for (int i = 0; i < row - 1; ++i)
-        {
-            for (int j = 0; j < col - 1; ++j)
-            {
-                std::cout << m_matrix[i][j] << "\t";
-            }
-
-            std::cout << std::endl;
-        }
-
-        std::cout << std::endl << check_residuals() << std::endl;*/
 
         std::cout << "C = " << std::endl;
         print_C_mark();
@@ -335,14 +298,6 @@ void Hungarian::recount()
 
     std::cout << "Минимальный элемент равен: " << min_el << std::endl;
 
-   /* for(int i = 0; i < row - 1; ++i)
-        for(int j = 0; j < col - 1; ++j)
-        {
-            if(m_matrix[i][j] == Mark::prime)
-                help_matrix[i][j] +=min_el;
-            if(m_matrix[i][j] == Mark::star)
-                help_matrix[i][j] -= min_el;
-        }*/
 
     for(int i = 0; i < chain.size(); ++i)
     {
@@ -351,18 +306,6 @@ void Hungarian::recount()
         if(m_matrix[chain[i].first][chain[i].second] == Mark::star)
             help_matrix[chain[i].first][chain[i].second] -=min_el;
     }
-
-   /* for (int i = 0; i < row - 1; ++i)
-    {
-        for (int j = 0; j < col - 1; ++j)
-        {
-            std::cout << help_matrix[i][j] << "\t";
-        }
-
-        std::cout << std::endl;
-    }
-
-    std::cout << std::endl << check_residuals() << std::endl;*/
     
     //Пересчитывает невзяки
     for (int i = 0; i < row - 1; ++i)
@@ -423,23 +366,6 @@ void Hungarian::find_min_from_not_busy_and_sub()
 
 bool Hungarian::find_star(int indx)
 {
-    /* for(int i = indx; i >= 0; --i)
-    {
-        if(m_matrix[i][indx] == Mark::star)
-        {
-            chain.push_back(std::make_pair(i, indx));
-            return true;
-        }
-    }
-
-    for(int i = indx; i < row - 1; ++i)
-    {
-        if(m_matrix[i][indx] == Mark::star)
-        {
-            chain.push_back(std::make_pair(i, indx));
-            return true;
-        }
-    }*/
 
     for(int i = 0; i < row - 1; ++i)
     {
@@ -455,23 +381,6 @@ bool Hungarian::find_star(int indx)
 
 bool Hungarian::find_prime(int indx)
 {
-    /* for(int i = indx; i >= 0; --i)
-    {
-        if(m_matrix[indx][i] == Mark::prime)
-        {
-            chain.push_back(std::make_pair(indx, i));
-            return true;
-        }
-    }
-
-    for(int i = indx; i < col - 1; ++i)
-    {
-        if(m_matrix[indx][i] == Mark::prime)
-        {
-            chain.push_back(std::make_pair(indx, i));
-            return true;
-        }
-    }*/
 
     for(int i = 0; i < col - 1; ++i)
     {

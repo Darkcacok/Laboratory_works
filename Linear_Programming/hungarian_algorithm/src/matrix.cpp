@@ -86,9 +86,14 @@ void Matrix::parse_file(std::ifstream &file)
     
     if(file.is_open())
     {
-        while(file.good() && std::getline(file, line))
+        while(file.good() && file.peek() != EOF)
         {
-            lines.push_back(line);
+            if(std::getline(file, line))
+            {
+                trim(line);
+                if(!line.empty())
+                    lines.push_back(line);
+            }
         }
     }
 
