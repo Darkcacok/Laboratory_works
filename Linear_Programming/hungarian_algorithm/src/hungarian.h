@@ -60,6 +60,8 @@ private:
     void print_C();
     void print_x();
     void print_C_mark();
+    void print_chain();
+    void print_mins_el(std::vector<int> mins);
 };
 
 #endif //HUNGARIAN_H_

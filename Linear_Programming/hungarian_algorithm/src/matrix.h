@@ -25,8 +25,8 @@ public:
     Matrix &operator=(const Matrix &m_matrix);
 
     void substraction(int i, int j, int x);
-    bool add_row(int *array, int size, int n);
-    bool add_col(int *array, int size, int n);
+    bool add_row(int *array, int size);
+    bool add_col(int *array, int size);
     int find_min_in_row(int row, int n);
     int find_min_in_col(int col, int n);
     int get_row_count();

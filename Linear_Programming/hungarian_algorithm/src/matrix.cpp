@@ -202,3 +202,70 @@ std::ostream &operator<<(std::ostream &os,  const Matrix &m_matrix)
 
     return os;
 }
+
+
+bool Matrix::add_row(int *array, int size)
+{
+    if(size != this->columns)
+        return false;
+
+    int **a;
+
+    a = new int*[rows + 1];
+
+    for(int i = 0; i < rows + 1; ++i)
+        a[i] = new int[columns];
+    
+    for(int i = 0; i < rows - 1; ++i)
+        for(int j = 0; j < columns; ++j)
+        {
+            a[i][j] = A[i][j];
+        }
+
+    for(int i = 0; i < columns; ++i)
+        a[rows - 1][i] = array[i];
+
+    for(int i = 0; i < columns; ++i)
+        a[rows][i] = A[rows - 1][i];
+
+    //delete
+    for(int i = 0; i < rows; ++i)
+        delete[] A[i];
+    
+    delete[] A;
+
+    A = a;
+    ++rows;
+}
+
+bool Matrix::add_col(int *array, int size)
+{
+    if(size != this->rows)
+        return false;
+
+    int **a;
+
+    a = new int*[rows];
+
+    for(int i = 0; i < rows; ++i)
+        a[i] = new int[columns + 1];
+    
+    for(int j = 0; j < columns - 1; ++j)
+        for(int i = 0; i < rows; ++i)
+            a[i][j] = A[i][j];
+
+    for(int i = 0; i < rows; ++i)
+        a[i][columns - 1] = array[i];
+
+    for(int i = 0; i < rows; ++i)
+        a[i][columns] = A[i][columns - 1];
+
+    //delete
+    for(int i = 0; i < rows; ++i)
+        delete[] A[i];
+    
+    delete[] A;
+
+    A = a;
+    ++columns;
+}

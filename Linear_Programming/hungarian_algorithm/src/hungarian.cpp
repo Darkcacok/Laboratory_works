@@ -11,6 +11,30 @@ Hungarian::Hungarian(Matrix &m_matrix)
     int customers, sellers;
     bool flag = check_balance(&customers, &sellers);
 
+    if(!flag)
+    {
+        if(customers < sellers)
+        {
+            int *array = new int[row];
+            for(int i = 0; i < row - 1; ++i)
+                array[i] = 0;
+            array[row - 1] = abs(customers - sellers);
+
+            C.add_col(array, row);
+        }
+        if(customers > sellers)
+        {
+            int *array = new int[col];
+            for(int i = 0; i < col - 1; ++i)
+                array[i] = 0;
+            array[col - 1] = abs(customers - sellers);
+
+            C.add_row(array, col);
+        }
+        row = C.get_row_count();
+        col = C.get_col_count();
+    }
+
     C0 = new int *[row - 1];
     help_matrix = new int *[row - 1];
     v_stocks = new int[row - 1];
@@ -29,88 +53,20 @@ Hungarian::Hungarian(Matrix &m_matrix)
         this->m_matrix[i] = new Mark[col - 1];
     }
 
-    if(!flag)
+    for (int i = 0; i < row - 1; ++i)
     {
-        if(customers > sellers)
-        {
-            for (int i = 0; i < row - 2; ++i)
-                for (int j = 0; j < col - 1; ++j)
-                    C0[i][j] = C.A[i][j];
-            
-            for(int j = 0; j < col- 1; ++j)
-                C0[j][row - 2] = 0;
-
-        }
-        else
-        {
-            for (int i = 0; i < row - 1; ++i)
-                for (int j = 0; j < col - 2; ++j)
-                    C0[i][j] = C.A[i][j];
-
-            for(int i = 0; i < row - 1; ++i)
-                C0[i][col - 2] = 0;
-        }
-        
-    }
-    else
-    {
-        for (int i = 0; i < row - 1; ++i)
-            for (int j = 0; j < col - 1; ++j)
-                C0[i][j] = C.A[i][j];
+        for (int j = 0; j < col - 1; ++j)
+            C0[i][j] = C.A[i][j];
     }
 
-    if(!flag)
+    for (int i = 0; i < row - 1; ++i)
     {
-        if(customers > sellers)
-        {
-            v_residuals[row - 2] = v_stocks[row - 2] = abs(sellers - customers);
-           
-        }
-        else
-        {
-             h_residuals[col - 2] = h_stocks[col - 2] = abs(sellers - customers);
-        }
-        
+        v_residuals[i] = v_stocks[i] = C.A[i][col - 1];
     }
 
-    if(!flag)
+    for (int i = 0; i < col - 1; ++i)
     {
-        if(customers > sellers)
-        {
-            for (int i = 0; i < row - 2; ++i)
-            {
-                v_residuals[i] = v_stocks[i] = C.A[i][col - 1];
-            }
-
-            for (int i = 0; i < col - 1; ++i)
-            {
-                h_residuals[i] = h_stocks[i] = C.A[row - 2][i];
-            }
-        }
-        else
-        {
-            for (int i = 0; i < row - 1; ++i)
-            {
-                v_residuals[i] = v_stocks[i] = C.A[i][col - 2];
-            }
-
-            for (int i = 0; i < col - 2; ++i)
-            {
-                h_residuals[i] = h_stocks[i] = C.A[row - 1][i];
-            }
-        }
-    }
-    else
-    {
-        for (int i = 0; i < row - 1; ++i)
-            {
-                v_residuals[i] = v_stocks[i] = C.A[i][col - 1];
-            }
-
-        for (int i = 0; i < col - 1; ++i)
-            {
-                h_residuals[i] = h_stocks[i] = C.A[row - 1][i];
-            }
+        h_residuals[i] = h_stocks[i] = C.A[row - 1][i];
     }
 
     clean_init_mark();
@@ -134,14 +90,14 @@ bool Hungarian::check_balance(int *customers, int *sellers)
 
     if((*customers) < (*sellers))
     {
-        col = col + 1;
+        //col = col + 1;
         std::cout << "Не сбалансированная транспортная задача: кол-во товаров у продавцов > кол-во требуемых товаров у потребителей, " << *sellers << " > " << *customers << std::endl;
         return false;
     }
 
     if((*customers) > (*sellers))
     {
-        row = row + 1;
+        //row = row + 1;
         std::cout << "Не сбалансированная транспортная задача: кол-во товаров у продавцов < кол-во требуемых товаров у потребителей, " << *sellers << " > " << *customers << std::endl;
         return false;
     }
@@ -222,6 +178,8 @@ void Hungarian::solve()
         std::cout << "--------------------------------------------\n";*/
         //5. Помечаем знаком + столбцы матрицы
         mark_column_matrix();
+        std::cout << std::endl << "C = " << std::endl;
+        print_C_mark();
 
          //6.
         int indx_i, indx_j;
@@ -243,10 +201,12 @@ void Hungarian::solve()
 
         std::cout << std::endl << check_residuals() << std::endl;*/
 
+        std::cout << "C = " << std::endl;
         print_C_mark();
         std::cout << std::endl;
         //9
         build_chain(indx_i, indx_j); 
+        print_chain();
         //10
         recount();        
     }
@@ -305,7 +265,13 @@ bool Hungarian::find_not_busy_zero(int *indx_i, int *indx_j)
                 row_mark[i] = Mark::plus;
                 //8
                 if(find_zero_in_busy(i))
-                    find_not_busy_zero(indx_i, indx_j);
+                {
+                    i = 0;
+                    j = -1;
+                    //find_not_busy_zero(indx_i, indx_j);
+                }
+            std::cout << std::endl << "C = " << std::endl;
+            print_C_mark();
                 
             }
             else
@@ -321,20 +287,21 @@ bool Hungarian::find_not_busy_zero(int *indx_i, int *indx_j)
 
 bool Hungarian::find_zero_in_busy(int indx_i)
 {
+    bool flag = false;
     for(int j = 0; j < col - 1; ++j)
     {
         if(col_mark[j] == Mark::plus)
         {
             if(C0[indx_i][j] == 0 && help_matrix[indx_i][j] > 0)
             {
+                flag = true;
                 m_matrix[indx_i][j] = Mark::star;
                 col_mark[j] = Mark::non;
-                return true;
             }
         }
     }
 
-    return false;
+    return flag;
 }
 
 void Hungarian::build_chain(int indx_i, int indx_j)
@@ -361,8 +328,12 @@ void Hungarian::recount()
     min.push_back(v_residuals[chain[0].first]);
     min.push_back(h_residuals[chain[chain.size() - 1].second]);
 
+    print_mins_el(min);
+
     std::vector<int>::iterator result = std::min_element(std::begin(min), std::end(min));
     int min_el = min[std::distance(std::begin(min), result)];
+
+    std::cout << "Минимальный элемент равен: " << min_el << std::endl;
 
    /* for(int i = 0; i < row - 1; ++i)
         for(int j = 0; j < col - 1; ++j)
@@ -418,6 +389,9 @@ void Hungarian::recount()
 
 void Hungarian::find_min_from_not_busy_and_sub()
 {
+
+    std::cout << "Не нашли не занятых нулей. Пересчитываем матрицу. ";
+
     std::vector<int> min;
 
     for(int i = 0; i < row - 1; ++i)
@@ -430,6 +404,8 @@ void Hungarian::find_min_from_not_busy_and_sub()
     std::vector<int>::iterator result = std::min_element(std::begin(min), std::end(min));
     int min_el = min[std::distance(std::begin(min), result)];
 
+    std::cout << "Минимальный элемент равен: " << min_el << std::endl;
+
     for(int i = 0; i < row - 1; ++i)
         for(int j = 0; j < col - 1; ++j)
         {
@@ -438,7 +414,8 @@ void Hungarian::find_min_from_not_busy_and_sub()
             if(col_mark[j] == Mark::plus)
                 C0[i][j] += min_el;
         }
-
+    
+    std::cout << "C = " << std::endl;
     print_C_mark();
     std::cout << std::endl;
 }
@@ -734,6 +711,50 @@ void Hungarian::print_C_mark()
         }
         std::cout << "+" << std::endl;
     }
+}
+
+void Hungarian::print_chain()
+{
+    std::cout << "Цепочка = ";
+
+    for(int i = 0; i < chain.size() - 1; ++i)
+    {
+       std::cout <<"[" << chain[i].first + 1 << "][" << chain[i].second + 1 << "]";
+       if(i%2 == 0)
+       {
+           std::cout << "'";
+       }
+       else
+       {
+           std::cout << "*";
+       }
+
+       std::cout << " --> ";
+    }
+
+    std::cout <<"[" << chain[chain.size() - 1].first + 1<< "][" << chain[chain.size() - 1].second + 1<< "]";
+
+    if( (chain.size() - 1)%2 == 0)
+    {
+           std::cout << "'";
+    }
+    else
+    {
+           std::cout << "*";
+    }
+
+    std::cout << std::endl;
+}
+
+void Hungarian::print_mins_el(std::vector<int> mins)
+{
+    std::cout << "min{";
+    for(int i = 0; i < mins.size() - 1; ++i)
+    {
+        std::cout << mins[i] << ", ";
+    }
+
+    std::cout << mins[mins.size() - 1]<< "}" << std::endl;
 }
 
 void Hungarian::get_solve()
