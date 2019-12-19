@@ -10,8 +10,12 @@
 #include <QJsonObject>
 #include <QByteArray>
 #include <QTimer>
+#include <QObject>
+
+#include <QNetworkInterface>
 
 #include <vector>
+#include <tuple>
 
 #include "ThreadTcpSocket.h"
 
@@ -21,7 +25,7 @@ class TcpServer : public QTcpServer
 public:
     struct Config
     {
-        QString address;
+        std::vector<std::tuple<QString, QString, QString>> address;
         quint16 port;
     };
 
@@ -32,18 +36,30 @@ public:
 
     Config getConfig();
 
+signals:
+    void state(bool flag);
+
 private:
-    std::vector<ThreadTcpSocket*> connections;
+
+    /**
+     * @brief Get the State object
+     *
+     * @return true - busy
+     * @return false  - free
+     */
+    std::vector<std::tuple<QThread*, ThreadTcpSocket*, bool>> connections;
 
     //state
     QTimer *stateTimer;
 
 
-    bool getState();
+    //bool getState();
     QByteArray createJsonState(bool state);
 
+    QString toString(QNetworkInterface::InterfaceType type);
+
 private slots:
-    void sendState();
+    void setState(bool flag);
 
 };
 

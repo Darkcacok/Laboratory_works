@@ -8,19 +8,21 @@
 #include <QJsonObject>
 #include <QMutex>
 
-class ThreadTcpSocket : public QThread
+#include "worker.h"
+#include "support.h"
+
+class ThreadTcpSocket : public QObject
 {
     Q_OBJECT
     
 public:
-    ThreadTcpSocket(qintptr socketDescriptor);
+    ThreadTcpSocket(qintptr socketDescriptor, QObject *parent = nullptr);
     ~ThreadTcpSocket();
 
-    void run() override;
     void stop();
     void waitForStop();
 
-    bool sendMessage(int type, QByteArray const &body);
+    //bool sendMessage(int type, QByteArray const &body);
 
     /**
      * @brief Get the State object
@@ -28,7 +30,16 @@ public:
      * @return true - busy
      * @return false  - free
      */
-    bool getState();
+
+signals:
+    void setState(bool flag);
+    void getState();
+    void processMessage(int type, QByteArray data);
+    //void deliveryMessage(int type, QByteArray const &body);
+
+public slots:
+    void receiveState(bool state);
+    void init();
 
 private:
 
@@ -41,13 +52,21 @@ private:
 
     //message
     QMutex mutexSend;
+
+    Worker *worker;
+
+    bool m_receiveFlag = false;
+    int m_type;
+    int m_size;
+    QByteArray m_message;
     
 
     QByteArray *createMessage(int type, QByteArray const &body);
-    char intToChar(int src);
 
 private slots:
     void socketReadyRead();
+    void messageProcessed(QByteArray data);
+    void sendMessage(int type, QByteArray const &body);
 
 };
 

@@ -14,6 +14,9 @@ find_package(Qt5 COMPONENTS Core Network REQUIRED)
 set(map_reduce_server_SRCS
     src/main.cpp
     src/server.cpp
+    src/worker.cpp
+    src/support.cpp
+    src/json.hpp
     src/ThreadTcpSocket.cpp
 )
 

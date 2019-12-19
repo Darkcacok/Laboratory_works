@@ -19,9 +19,17 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
-    TcpServer::Config conf = server->getConfig();
+   TcpServer::Config conf = server->getConfig();
 
-    qDebug() << "Address: " << conf.address;
+   qDebug() << "Address: ";
+   for(auto &address: conf.address)
+   {
+       QString name, type, ip;
+       std::tie(name, type, ip) = address;
+       qDebug() << "          " << name<< ": " << type << ": " << ip;
+   }
+
+//    qDebug() << "Address: " << conf.address;
     qDebug() << "Port:    " << conf.port;
 
 
